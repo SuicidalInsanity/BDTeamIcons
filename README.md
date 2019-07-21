@@ -9,4 +9,5 @@ Use:
 	'Debris Icons' toggles debris icons on/off
 	'Do not hide with UI' toggles if icons are turned off via F2 
 
-Currently, BDTeamIcons will diferentiate between 7 different types of craft and mark each with unique icons - Ships, Planes, Bases/Landers, Probes, Rovers, Submarines, and Station/Relay
+Currently, BDTeamIcons will diferentiate between 7 different types of craft and mark each with unique icons - 
+Ships, Planes, Bases/Landers, Probes, Rovers, Submarines, and Station/Relay
