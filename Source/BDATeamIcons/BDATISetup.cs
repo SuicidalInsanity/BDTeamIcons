@@ -295,15 +295,16 @@ namespace BDTeamIcons
 			TeamIconSettings.TEAMICONS = GUI.Toggle(new Rect(5, 25, 100, 20), TeamIconSettings.TEAMICONS, "Enable Team Icons", BDGuiSkin.toggle);
 			if (TeamIconSettings.TEAMICONS)
 			{
-				Rect IconOptionsGroup = new Rect(15, 55, toolWindowWidth - 20, 130);
+				Rect IconOptionsGroup = new Rect(15, 55, toolWindowWidth - 20, 160);
 				GUI.BeginGroup(IconOptionsGroup, GUIContent.none, BDGuiSkin.box);
 				TeamIconSettings.TEAMNAMES = GUI.Toggle(new Rect(15, 0, toolWindowWidth - 20, 20), TeamIconSettings.TEAMNAMES, "Enable Team Labels", BDGuiSkin.toggle);
 				TeamIconSettings.VESSELNAMES = GUI.Toggle(new Rect(15, 25, toolWindowWidth - 20, 20), TeamIconSettings.VESSELNAMES, "Enable Vessel Labels", BDGuiSkin.toggle);
-				TeamIconSettings.MISSILES = GUI.Toggle(new Rect(15, 50, toolWindowWidth - 20, 20), TeamIconSettings.MISSILES, "Missile icons", BDGuiSkin.toggle);
+				TeamIconSettings.MISSILES = GUI.Toggle(new Rect(15, 50, toolWindowWidth - 20, 20), TeamIconSettings.MISSILES, "Missile Icons", BDGuiSkin.toggle);
 				TeamIconSettings.DEBRIS = GUI.Toggle(new Rect(15, 75, toolWindowWidth - 20, 20), TeamIconSettings.DEBRIS, "Debris Icons", BDGuiSkin.toggle);
 				TeamIconSettings.PERSISTANT = GUI.Toggle(new Rect(15, 100, toolWindowWidth - 20, 20), TeamIconSettings.PERSISTANT, "Do not hide with UI", BDGuiSkin.toggle);
+				TeamIconSettings.ICONSCALE = GUI.HorizontalSlider(new Rect(15, 135, toolWindowWidth - 20, 20), TeamIconSettings.ICONSCALE, 0.25f, 2f);
 				GUI.EndGroup();
-				line = 5;
+				line = 7;
 				/*
 				Rect TeamColorsGroup = new Rect(15, 190, toolWindowWidth - 20, 60);
 				GUI.BeginGroup(TeamColorsGroup, GUIContent.none, BDGuiSkin.box);

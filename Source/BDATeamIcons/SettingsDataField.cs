@@ -62,6 +62,10 @@ namespace BDTeamIcons
 			{
 				return Boolean.Parse(value);
 			}
+			else if (type == typeof(float))
+			{
+				return Single.Parse(value);
+			}
 			else if (type == typeof(Color))
 			{
 				return Misc.ParseColor255(value);

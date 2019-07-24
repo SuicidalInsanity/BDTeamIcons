@@ -11,6 +11,7 @@ namespace BDTeamIcons
 		[SettingsDataField] public static bool MISSILES = false;
 		[SettingsDataField] public static bool DEBRIS = true;
 		[SettingsDataField] public static bool PERSISTANT = true;
+		[SettingsDataField] public static float ICONSCALE = 1.0f;
 		/*
 		[SettingsDataField] public static Color TEAM_1_COLOR = XKCDColors.Red;
 		[SettingsDataField] public static Color TEAM_2_COLOR = XKCDColors.Blue;

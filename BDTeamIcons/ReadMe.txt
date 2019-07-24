@@ -11,10 +11,7 @@ Use:
 Currently, BDTeamIcons will diferentiate between 7 different types of craft and mark each with unique icons - Ships, Planes, Bases/Landers, Probes, Rovers, Submarines, and Station/Relay
 
 
-BDTeamIcons is distributed under a CC-BY-SA 2.0 liscense.
-Please read about the license at
-https://creativecommons.org/licenses/by-sa/2.0/
-before attempting to modify and redistribute it.
+BDTeamIcons is distributed under a CC-BY-SA 2.0 license.
 
 
 

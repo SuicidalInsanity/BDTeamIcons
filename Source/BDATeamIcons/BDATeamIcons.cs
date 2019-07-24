@@ -75,6 +75,7 @@ namespace BDTeamIcons
 				{
 					yPos = Mathf.Clamp(yPos, ((1 - screenPos.y) * Screen.height * 1)-20, ((1 - screenPos.y) * Screen.height * 1)-20);
 				}
+
 				Vector2 pointer;
 				Vector2 tail;
 
@@ -228,6 +229,7 @@ namespace BDTeamIcons
 									else if (mf.Current.vessel.vesselType == VesselType.Debris)
 									{
 										icon = BDATISetup.Instance.TextureIconDebris;
+										size = 20;
 									}
 									else
 									{
@@ -265,6 +267,7 @@ namespace BDTeamIcons
 									else if (mf.Current.vessel.vesselType == VesselType.Debris)
 									{
 										icon = BDATISetup.Instance.TextureIconDebris;
+										size = 20;
 									}
 									else
 									{
@@ -284,20 +287,22 @@ namespace BDTeamIcons
 
 								//alternitively, link into the team counting code from vesselswitcher and have the counter count from there?
 
-								DrawOnScreenIcon(mf.Current.vessel.CoM, icon, new Vector2(size, size), Teamcolor);
+								IconUIStyle.fontSize = Mathf.RoundToInt(10 * TeamIconSettings.ICONSCALE);
+
+								DrawOnScreenIcon(mf.Current.vessel.CoM, icon, new Vector2((size*TeamIconSettings.ICONSCALE), (size*TeamIconSettings.ICONSCALE)), Teamcolor);
 								if (BDGUIUtils.WorldToGUIPos(mf.Current.vessel.CoM, out guiPos))
 								{
 									if (TeamIconSettings.VESSELNAMES)
 									{
 										vName = mf.Current.vessel.vesselName;
-										Rect nameRect = new Rect((guiPos.x + 24), guiPos.y - 4, 100, 32);
+										Rect nameRect = new Rect((guiPos.x + (24 * TeamIconSettings.ICONSCALE)), guiPos.y - 4, 100, 32);
 										GUI.Label(nameRect, vName, IconUIStyle);
 									}
-									Rect distRect = new Rect((guiPos.x - 12), (guiPos.y + 20), 100, 32);
+									Rect distRect = new Rect((guiPos.x - 12), (guiPos.y + (20 * TeamIconSettings.ICONSCALE)), 100, 32);
 									GUI.Label(distRect, UIdist + UoM, IconUIStyle);
 									if (TeamIconSettings.TEAMNAMES)
 									{
-										Rect teamRect = new Rect((guiPos.x + 11), (guiPos.y - 19), 16, 16);
+										Rect teamRect = new Rect((guiPos.x + (11 * TeamIconSettings.ICONSCALE)), (guiPos.y - (19*TeamIconSettings.ICONSCALE)), 16, 16);
 										GUI.Label(teamRect, "Team: " + $"{mf.Current.Team.Name}", IconUIStyle);
 									}
 
