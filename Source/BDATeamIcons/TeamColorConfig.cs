@@ -83,8 +83,6 @@ namespace BDTeamIcons
 			hueSlider = GUI.VerticalSlider(new Rect(HorizPos + displayTextureWidth + 3, VertPos, 10, displayTextureHeight), hueSlider, 1, 0);
 			GUI.Box(new Rect(HorizPos + displayTextureWidth + 20, VertPos, 20, displayTextureHeight), hueTexture);
 
-			GUI.Label(new Rect(HorizPos + 20, VertPos + displayTextureHeight + 10, 200, 25), "Team: " + BDATISetup.Instance.teamname + " Color Select");
-			GUI.Label(new Rect(HorizPos + 20, VertPos + displayTextureHeight + 35, 200, 25), "Teamcolor is: " + selectedColor);
 			if (GUI.Button(new Rect(HorizPos + displayTextureWidth - 60, VertPos + displayTextureHeight + 10, 60, 25), "Apply"))
 			{
 				selectedColor = selectedColorPreview.GetPixel(0, 0);
@@ -112,39 +110,36 @@ namespace BDTeamIcons
 						updateTimer = 0.5f;    //next update in half a sec only
 						if (BDATISetup.Instance.selectedTeam == 1)
 						{
-							//TeamIconSettings.TEAM_1_COLOR = selectedColor;
+							TeamIconSettings.TEAM_1_COLOR = $"{Mathf.RoundToInt(selectedColor.r*255)},{Mathf.RoundToInt(selectedColor.g * 255)},{Mathf.RoundToInt(selectedColor.b * 255)},{Mathf.RoundToInt(selectedColor.a * 255)}";
 						}
 						else if (BDATISetup.Instance.selectedTeam == 2)
 						{
-							//TeamIconSettings.TEAM_2_COLOR = selectedColor;
+							TeamIconSettings.TEAM_2_COLOR = $"{Mathf.RoundToInt(selectedColor.r * 255)},{Mathf.RoundToInt(selectedColor.g * 255)},{Mathf.RoundToInt(selectedColor.b * 255)},{Mathf.RoundToInt(selectedColor.a * 255)}";
 						}
-
-						/*
 						else if (BDATISetup.Instance.selectedTeam == 3)
 						{
-							TeamIconSettings.TEAM_3_COLOR = selectedColor;
+							TeamIconSettings.TEAM_3_COLOR = $"{Mathf.RoundToInt(selectedColor.r * 255)},{Mathf.RoundToInt(selectedColor.g * 255)},{Mathf.RoundToInt(selectedColor.b * 255)},{Mathf.RoundToInt(selectedColor.a * 255)}";
 						}
 						else if (BDATISetup.Instance.selectedTeam == 4)
 						{
-							TeamIconSettings.TEAM_4_COLOR = selectedColor;
+							TeamIconSettings.TEAM_4_COLOR = $"{Mathf.RoundToInt(selectedColor.r * 255)},{Mathf.RoundToInt(selectedColor.g * 255)},{Mathf.RoundToInt(selectedColor.b * 255)},{Mathf.RoundToInt(selectedColor.a * 255)}";
 						}
 						else if (BDATISetup.Instance.selectedTeam == 5)
 						{
-							TeamIconSettings.TEAM_5_COLOR = selectedColor;
+							TeamIconSettings.TEAM_5_COLOR = $"{Mathf.RoundToInt(selectedColor.r * 255)},{Mathf.RoundToInt(selectedColor.g * 255)},{Mathf.RoundToInt(selectedColor.b * 255)},{Mathf.RoundToInt(selectedColor.a * 255)}";
 						}
 						else if (BDATISetup.Instance.selectedTeam == 6)
 						{
-							TeamIconSettings.TEAM_6_COLOR = selectedColor;
+							TeamIconSettings.TEAM_6_COLOR = $"{Mathf.RoundToInt(selectedColor.r * 255)},{Mathf.RoundToInt(selectedColor.g * 255)},{Mathf.RoundToInt(selectedColor.b * 255)},{Mathf.RoundToInt(selectedColor.a * 255)}";
 						}
 						else if (BDATISetup.Instance.selectedTeam == 7)
 						{
-							TeamIconSettings.TEAM_7_COLOR = selectedColor;
+							TeamIconSettings.TEAM_7_COLOR = $"{Mathf.RoundToInt(selectedColor.r * 255)},{Mathf.RoundToInt(selectedColor.g * 255)},{Mathf.RoundToInt(selectedColor.b * 255)},{Mathf.RoundToInt(selectedColor.a * 255)}";
 						}
 						else if (BDATISetup.Instance.selectedTeam == 8)
 						{
-							TeamIconSettings.TEAM_8_COLOR = selectedColor;
+							TeamIconSettings.TEAM_8_COLOR = $"{Mathf.RoundToInt(selectedColor.r * 255)},{Mathf.RoundToInt(selectedColor.g * 255)},{Mathf.RoundToInt(selectedColor.b * 255)},{Mathf.RoundToInt(selectedColor.a * 255)}";
 						}
-						//BDATISetup.Instance.showColorSelect = false;*/
 						BDATISetup.Instance.UpdateTeamColor = !BDATISetup.Instance.UpdateTeamColor;
 					}
 				}

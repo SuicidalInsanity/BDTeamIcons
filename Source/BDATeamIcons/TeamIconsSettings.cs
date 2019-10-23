@@ -1,7 +1,6 @@
-﻿
-namespace BDTeamIcons
+﻿namespace BDTeamIcons
 {
-	internal class TeamIconSettings
+	public class TeamIconSettings
 	{
 		public static string settingsConfigURL = "GameData/BDATeamIcons/settings.cfg";
 
@@ -11,16 +10,17 @@ namespace BDTeamIcons
 		[SettingsDataField] public static bool MISSILES = false;
 		[SettingsDataField] public static bool DEBRIS = true;
 		[SettingsDataField] public static bool PERSISTANT = true;
+		[SettingsDataField] public static bool POINTERS = true;
 		[SettingsDataField] public static float ICONSCALE = 1.0f;
-		/*
-		[SettingsDataField] public static Color TEAM_1_COLOR = XKCDColors.Red;
-		[SettingsDataField] public static Color TEAM_2_COLOR = XKCDColors.Blue;
-		[SettingsDataField] public static Color TEAM_3_COLOR = XKCDColors.Green;
-		[SettingsDataField] public static Color TEAM_4_COLOR = XKCDColors.Yellow;
-		[SettingsDataField] public static Color TEAM_5_COLOR = XKCDColors.Purple;
-		[SettingsDataField] public static Color TEAM_6_COLOR = XKCDColors.BloodOrange;
-		[SettingsDataField] public static Color TEAM_7_COLOR = XKCDColors.Cyan;
-		[SettingsDataField] public static Color TEAM_8_COLOR = XKCDColors.DarkGreen;
-		*/
+
+		[SettingsDataField] public static string TEAM_1_COLOR = "255,0,0,200";
+		[SettingsDataField] public static string TEAM_2_COLOR = "0,0,255,200";
+		[SettingsDataField] public static string TEAM_3_COLOR = "0,255,0,200";
+		[SettingsDataField] public static string TEAM_4_COLOR = "255,255,0,200";
+		[SettingsDataField] public static string TEAM_5_COLOR = "255,192,0,200";
+		[SettingsDataField] public static string TEAM_6_COLOR = "255,0,255,200";
+		[SettingsDataField] public static string TEAM_7_COLOR = "0,255,255,200";
+		[SettingsDataField] public static string TEAM_8_COLOR = "0,128,0,200";
+
 	}
 }

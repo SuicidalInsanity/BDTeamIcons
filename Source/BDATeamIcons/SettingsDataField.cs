@@ -66,9 +66,9 @@ namespace BDTeamIcons
 			{
 				return Single.Parse(value);
 			}
-			else if (type == typeof(Color))
+			else if (type == typeof(string))
 			{
-				return Misc.ParseColor255(value);
+				return value;
 			}
 			Debug.LogError("[BDArmory]: BDAPersistantSettingsField to parse settings field of type " + type +
 						   " and value " + value);
