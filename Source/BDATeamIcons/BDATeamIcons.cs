@@ -211,7 +211,7 @@ namespace BDTeamIcons
 						while (ml.MoveNext())
 						{
 							if (ml.Current == null) continue;
-							if (ml.Current.MissileState == MissileBase.MissileStates.Boost || ml.Current.MissileState == MissileBase.MissileStates.Cruise)
+							if (ml.Current.MissileState != MissileBase.MissileStates.Idle && ml.Current.MissileState != MissileBase.MissileStates.Drop)
 							{
 								Vector3 sPos = FlightGlobals.ActiveVessel.vesselTransform.position;
 								Vector3 tPos = v.Current.vesselTransform.position;
