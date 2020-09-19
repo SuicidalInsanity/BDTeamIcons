@@ -29,7 +29,6 @@ namespace BDTeamIcons
 
 		private void Start()
 		{
-
 			IconUIStyle = new GUIStyle();
 			IconUIStyle.fontStyle = FontStyle.Bold;
 			IconUIStyle.fontSize = 10;
@@ -57,6 +56,10 @@ namespace BDTeamIcons
 		}
 		private void Update()
 		{
+			if (!HighLogic.LoadedSceneIsFlight)
+			{
+				return;
+			}
 			if (TeamIconSettings.TEAMICONS)
 			{
 				updateList -= Time.fixedDeltaTime;
@@ -71,23 +74,22 @@ namespace BDTeamIcons
 		{
 			weaponManagers.Clear();
 
-			List<Vessel>.Enumerator v = FlightGlobals.Vessels.GetEnumerator();
-			while (v.MoveNext())
-			{
-				if (v.Current == null || !v.Current.loaded || v.Current.packed)
-					continue;
-				using (var wms = v.Current.FindPartModulesImplementing<MissileFire>().GetEnumerator())
-					while (wms.MoveNext())
-						if (wms.Current != null)
-						{
-							if (weaponManagers.TryGetValue(wms.Current.Team.Name, out var teamManagers))
-								teamManagers.Add(wms.Current);
-							else
-								weaponManagers.Add(wms.Current.Team.Name, new List<MissileFire> { wms.Current });
-							break;
-						}
-			}
-			v.Dispose();
+			using (List<Vessel>.Enumerator v = FlightGlobals.Vessels.GetEnumerator())
+				while (v.MoveNext())
+				{
+					if (v.Current == null || !v.Current.loaded || v.Current.packed)
+						continue;
+					using (var wms = v.Current.FindPartModulesImplementing<MissileFire>().GetEnumerator())
+						while (wms.MoveNext())
+							if (wms.Current != null)
+							{
+								if (weaponManagers.TryGetValue(wms.Current.Team.Name, out var teamManagers))
+									teamManagers.Add(wms.Current);
+								else
+									weaponManagers.Add(wms.Current.Team.Name, new List<MissileFire> { wms.Current });
+								break;
+							}
+				}
 		}
 
 		private static void DrawOnScreenIcon(Vector3 worldPos, Texture texture, Vector2 size, Color Teamcolor)
@@ -199,66 +201,64 @@ namespace BDTeamIcons
 				Texture icon;
 				float size = 40;
 
-				List<Vessel>.Enumerator v = FlightGlobals.Vessels.GetEnumerator();
-				while (v.MoveNext())
-				{
-					if (v.Current == null) continue;
-					if (!v.Current.loaded || v.Current.packed || v.Current.isActiveVessel) continue;
-
-					if (TeamIconSettings.MISSILES)
+				using (List<Vessel>.Enumerator v = FlightGlobals.Vessels.GetEnumerator())
+					while (v.MoveNext())
 					{
-						List<MissileBase>.Enumerator ml = v.Current.FindPartModulesImplementing<MissileBase>().GetEnumerator();
-						while (ml.MoveNext())
+						if (v.Current == null) continue;
+						if (!v.Current.loaded || v.Current.packed || v.Current.isActiveVessel) continue;
+
+						if (TeamIconSettings.MISSILES)
 						{
-							if (ml.Current == null) continue;
-							if (ml.Current.MissileState != MissileBase.MissileStates.Idle && ml.Current.MissileState != MissileBase.MissileStates.Drop)
+							using (List<MissileBase>.Enumerator ml = v.Current.FindPartModulesImplementing<MissileBase>().GetEnumerator())
+								while (ml.MoveNext())
+								{
+									if (ml.Current == null) continue;
+									if (ml.Current.MissileState != MissileBase.MissileStates.Idle && ml.Current.MissileState != MissileBase.MissileStates.Drop)
+									{
+										Vector3 sPos = FlightGlobals.ActiveVessel.vesselTransform.position;
+										Vector3 tPos = v.Current.vesselTransform.position;
+										Vector3 Dist = (tPos - sPos);
+										Vector2 guiPos;
+										string UIdist;
+										string UoM;
+										if (Dist.magnitude > 100)
+										{
+											if ((Dist.magnitude / 1000) >= 1)
+											{
+												UoM = "km";
+												UIdist = (Dist.magnitude / 1000).ToString("0.00");
+											}
+											else
+											{
+												UoM = "m";
+												UIdist = Dist.magnitude.ToString("0.0");
+											}
+											BDGUIUtils.DrawTextureOnWorldPos(v.Current.CoM, BDATISetup.Instance.TextureIconMissile, new Vector2(20, 20), 0);
+											if (BDGUIUtils.WorldToGUIPos(ml.Current.vessel.CoM, out guiPos))
+											{
+												Rect distRect = new Rect((guiPos.x - 12), (guiPos.y + 10), 100, 32);
+												GUI.Label(distRect, UIdist + UoM, mIStyle);
+											}
+
+										}
+									}
+								}
+						}
+						if (TeamIconSettings.DEBRIS)
+						{
+							if (v.Current.vesselType != VesselType.Debris && !v.Current.isActiveVessel) continue;
+							if (v.Current.LandedOrSplashed) continue;
 							{
 								Vector3 sPos = FlightGlobals.ActiveVessel.vesselTransform.position;
 								Vector3 tPos = v.Current.vesselTransform.position;
 								Vector3 Dist = (tPos - sPos);
-								Vector2 guiPos;
-								string UIdist;
-								string UoM;
 								if (Dist.magnitude > 100)
 								{
-									if ((Dist.magnitude / 1000) >= 1)
-									{
-										UoM = "km";
-										UIdist = (Dist.magnitude / 1000).ToString("0.00");
-									}
-									else
-									{
-										UoM = "m";
-										UIdist = Dist.magnitude.ToString("0.0");
-									}
-									BDGUIUtils.DrawTextureOnWorldPos(v.Current.CoM, BDATISetup.Instance.TextureIconMissile, new Vector2(20, 20), 0);
-									if (BDGUIUtils.WorldToGUIPos(ml.Current.vessel.CoM, out guiPos))
-									{
-										Rect distRect = new Rect((guiPos.x - 12), (guiPos.y + 10), 100, 32);
-										GUI.Label(distRect, UIdist + UoM, mIStyle);
-									}
-
+									BDGUIUtils.DrawTextureOnWorldPos(v.Current.CoM, BDATISetup.Instance.TextureIconDebris, new Vector2(20, 20), 0);
 								}
 							}
 						}
-						ml.Dispose();
 					}
-					if (TeamIconSettings.DEBRIS)
-					{
-						if (v.Current.vesselType != VesselType.Debris && !v.Current.isActiveVessel) continue;
-						if (v.Current.LandedOrSplashed) continue;
-						{
-							Vector3 sPos = FlightGlobals.ActiveVessel.vesselTransform.position;
-							Vector3 tPos = v.Current.vesselTransform.position;
-							Vector3 Dist = (tPos - sPos);
-							if (Dist.magnitude > 100)
-							{
-								BDGUIUtils.DrawTextureOnWorldPos(v.Current.CoM, BDATISetup.Instance.TextureIconDebris, new Vector2(20, 20), 0);
-							}
-						}
-					}
-				}
-				v.Dispose();
 				int Teamcount = 0;
 				using (var teamManagers = weaponManagers.GetEnumerator())
 					while (teamManagers.MoveNext())
@@ -270,7 +270,6 @@ namespace BDTeamIcons
 								if (wm.Current == null) continue;
 
 								if (wm.Current.vessel.isActiveVessel) continue;
-
 
 								Vector3 selfPos = FlightGlobals.ActiveVessel.CoM;
 								Vector3 targetPos = (wm.Current.vessel.CoM);
@@ -365,6 +364,46 @@ namespace BDTeamIcons
 									{
 										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_8_COLOR);
 										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_8_COLOR);
+									}
+									else if (Teamcount == 9)
+									{
+										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_1_COLOR);
+										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_9_COLOR);
+									}
+									else if (Teamcount == 10)
+									{
+										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_2_COLOR);
+										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_10_COLOR);
+									}
+									else if (Teamcount == 11)
+									{
+										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_3_COLOR);
+										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_11_COLOR);
+									}
+									else if (Teamcount == 12)
+									{
+										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_4_COLOR);
+										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_12_COLOR);
+									}
+									else if (Teamcount == 13)
+									{
+										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_5_COLOR);
+										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_13_COLOR);
+									}
+									else if (Teamcount == 14)
+									{
+										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_6_COLOR);
+										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_14_COLOR);
+									}
+									else if (Teamcount == 15)
+									{
+										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_7_COLOR);
+										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_15_COLOR);
+									}
+									else if (Teamcount == 16)
+									{
+										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_8_COLOR);
+										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_16_COLOR);
 									}
 									else
 									{

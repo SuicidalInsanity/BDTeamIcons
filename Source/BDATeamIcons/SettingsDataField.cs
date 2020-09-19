@@ -23,15 +23,14 @@ namespace BDTeamIcons
 			}
 
 			ConfigNode settings = fileNode.GetNode("IconSettings");
-			IEnumerator<FieldInfo> field = typeof(TeamIconSettings).GetFields().AsEnumerable().GetEnumerator();
-			while (field.MoveNext())
-			{
-				if (field.Current == null) continue;
-				if (!field.Current.IsDefined(typeof(SettingsDataField), false)) continue;
+			using (IEnumerator<FieldInfo> field = typeof(TeamIconSettings).GetFields().AsEnumerable().GetEnumerator())
+				while (field.MoveNext())
+				{
+					if (field.Current == null) continue;
+					if (!field.Current.IsDefined(typeof(SettingsDataField), false)) continue;
 
-				settings.SetValue(field.Current.Name, field.Current.GetValue(null).ToString(), true);
-			}
-			field.Dispose();
+					settings.SetValue(field.Current.Name, field.Current.GetValue(null).ToString(), true);
+				}
 			fileNode.Save(TeamIconSettings.settingsConfigURL);
 		}
 		public static void Load()
@@ -41,20 +40,19 @@ namespace BDTeamIcons
 
 			ConfigNode settings = fileNode.GetNode("IconSettings");
 
-			IEnumerator<FieldInfo> field = typeof(TeamIconSettings).GetFields().AsEnumerable().GetEnumerator();
-			while (field.MoveNext())
-			{
-				if (field.Current == null) continue;
-				if (!field.Current.IsDefined(typeof(SettingsDataField), false)) continue;
-
-				if (!settings.HasValue(field.Current.Name)) continue;
-				object parsedValue = ParseValue(field.Current.FieldType, settings.GetValue(field.Current.Name));
-				if (parsedValue != null)
+			using (IEnumerator<FieldInfo> field = typeof(TeamIconSettings).GetFields().AsEnumerable().GetEnumerator())
+				while (field.MoveNext())
 				{
-					field.Current.SetValue(null, parsedValue);
+					if (field.Current == null) continue;
+					if (!field.Current.IsDefined(typeof(SettingsDataField), false)) continue;
+
+					if (!settings.HasValue(field.Current.Name)) continue;
+					object parsedValue = ParseValue(field.Current.FieldType, settings.GetValue(field.Current.Name));
+					if (parsedValue != null)
+					{
+						field.Current.SetValue(null, parsedValue);
+					}
 				}
-			}
-			field.Dispose();
 		}
 		public static object ParseValue(Type type, string value)
 		{

@@ -21,6 +21,13 @@
 		[SettingsDataField] public static string TEAM_6_COLOR = "255,0,255,200";
 		[SettingsDataField] public static string TEAM_7_COLOR = "0,255,255,200";
 		[SettingsDataField] public static string TEAM_8_COLOR = "0,128,0,200";
-
+		[SettingsDataField] public static string TEAM_9_COLOR = "255,192,192,200";
+		[SettingsDataField] public static string TEAM_10_COLOR = "128,0,128,200";
+		[SettingsDataField] public static string TEAM_11_COLOR = "0,128,128,200";
+		[SettingsDataField] public static string TEAM_12_COLOR = "128,128,255,200";
+		[SettingsDataField] public static string TEAM_13_COLOR = "128,96,0,200";
+		[SettingsDataField] public static string TEAM_14_COLOR = "192,192,128,200";
+		[SettingsDataField] public static string TEAM_15_COLOR = "255,128,0,200";
+		[SettingsDataField] public static string TEAM_16_COLOR = "0,0,128,200";
 	}
 }

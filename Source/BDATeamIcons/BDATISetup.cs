@@ -132,23 +132,22 @@ namespace BDTeamIcons
 		{
 			weaponManagers.Clear();
 
-			List<Vessel>.Enumerator v = FlightGlobals.Vessels.GetEnumerator();
-			while (v.MoveNext())
-			{
-				if (v.Current == null || !v.Current.loaded || v.Current.packed)
-					continue;
-				using (var wms = v.Current.FindPartModulesImplementing<MissileFire>().GetEnumerator())
-					while (wms.MoveNext())
-						if (wms.Current != null)
-						{
-							if (weaponManagers.TryGetValue(wms.Current.Team.Name, out var teamManagers))
-								teamManagers.Add(wms.Current);
-							else
-								weaponManagers.Add(wms.Current.Team.Name, new List<MissileFire> { wms.Current });
-							break;
-						}
-			}
-			v.Dispose();
+			using (List<Vessel>.Enumerator v = FlightGlobals.Vessels.GetEnumerator())
+				while (v.MoveNext())
+				{
+					if (v.Current == null || !v.Current.loaded || v.Current.packed)
+						continue;
+					using (var wms = v.Current.FindPartModulesImplementing<MissileFire>().GetEnumerator())
+						while (wms.MoveNext())
+							if (wms.Current != null)
+							{
+								if (weaponManagers.TryGetValue(wms.Current.Team.Name, out var teamManagers))
+									teamManagers.Add(wms.Current);
+								else
+									weaponManagers.Add(wms.Current.Team.Name, new List<MissileFire> { wms.Current });
+								break;
+							}
+				}
 		}
 
 		private void OnDestroy()
@@ -314,6 +313,38 @@ namespace BDTeamIcons
 						else if (i == 8)
 						{
 							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_8_COLOR);
+						}
+						else if (i == 9)
+						{
+							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_9_COLOR);
+						}
+						else if (i == 10)
+						{
+							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_10_COLOR);
+						}
+						else if (i == 11)
+						{
+							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_11_COLOR);
+						}
+						else if (i == 12)
+						{
+							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_12_COLOR);
+						}
+						else if (i == 13)
+						{
+							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_13_COLOR);
+						}
+						else if (i == 14)
+						{
+							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_14_COLOR);
+						}
+						else if (i == 15)
+						{
+							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_15_COLOR);
+						}
+						else if (i == 16)
+						{
+							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_16_COLOR);
 						}
 						GUI.Label(new Rect(5, -20 + (i * 25), 25, 25), "*", title);
 					}

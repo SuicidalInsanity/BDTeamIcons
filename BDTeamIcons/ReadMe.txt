@@ -1,4 +1,4 @@
-BDTeamIcons adds team IU icons to vessels in BDA teams, and supports up to 8 different teams.
+BDTeamIcons adds team IU icons to vessels in BDA teams, and supports up to 16 different teams.
 Use:
 	Press F4 to toggle off the default vessel UI overlay
 	'Enable Team Icons' toggles icons on or off.
