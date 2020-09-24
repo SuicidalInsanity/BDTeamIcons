@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
@@ -49,6 +49,12 @@ namespace BDTeamIcons
 		{
 			get { return mit ? mit : mit = GameDatabase.Instance.GetTexture(textureDir + "missileIcon", false); }
 		}
+		private Texture2D tit;
+		public Texture2D TextureIconThreat
+		{
+			get { return tit ? tit : tit = GameDatabase.Instance.GetTexture(textureDir + "targetIcon", false); }
+		}
+
 
 		private Texture2D ti7;
 		public Texture2D TextureIconGeneric
@@ -250,29 +256,42 @@ namespace BDTeamIcons
 		{
 			int line = 0;
 			int i = 0;
-			TeamIconSettings.TEAMICONS = GUI.Toggle(new Rect(5, 25, 200, 20), TeamIconSettings.TEAMICONS, "Enable Team Icons", BDGuiSkin.toggle);
+			TeamIconSettings.TEAMICONS = GUI.Toggle(new Rect(5, 25, 250, 20), TeamIconSettings.TEAMICONS, "Enable Team Icons", BDGuiSkin.toggle);
 			if (TeamIconSettings.TEAMICONS)
 			{
-				Rect IconOptionsGroup = new Rect(15, 55, toolWindowWidth - 20, 200);
+				Rect IconOptionsGroup = new Rect(15, 55, toolWindowWidth - 20, 250);
 				GUI.BeginGroup(IconOptionsGroup, GUIContent.none, BDGuiSkin.box);
 				TeamIconSettings.TEAMNAMES = GUI.Toggle(new Rect(15, 0, toolWindowWidth - 20, 20), TeamIconSettings.TEAMNAMES, "Enable Team Labels", BDGuiSkin.toggle);
 				TeamIconSettings.VESSELNAMES = GUI.Toggle(new Rect(15, 25, toolWindowWidth - 20, 20), TeamIconSettings.VESSELNAMES, "Enable Vessel Labels", BDGuiSkin.toggle);
-				TeamIconSettings.MISSILES = GUI.Toggle(new Rect(15, 50, toolWindowWidth - 20, 20), TeamIconSettings.MISSILES, "Missile Icons", BDGuiSkin.toggle);
-				TeamIconSettings.DEBRIS = GUI.Toggle(new Rect(15, 75, toolWindowWidth - 20, 20), TeamIconSettings.DEBRIS, "Debris Icons", BDGuiSkin.toggle);
-				TeamIconSettings.PERSISTANT = GUI.Toggle(new Rect(15, 100, toolWindowWidth - 20, 20), TeamIconSettings.PERSISTANT, "Do not hide with UI", BDGuiSkin.toggle);
-				TeamIconSettings.POINTERS = GUI.Toggle(new Rect(15, 130, toolWindowWidth - 20, 20), TeamIconSettings.POINTERS, "Offscreen Icon Pointers", BDGuiSkin.toggle);
 
-				GUI.Label(new Rect(75, 150, toolWindowWidth - 20, 20), $"Icon scale: {(TeamIconSettings.ICONSCALE * 100f).ToString("0")}" + "%");
-				TeamIconSettings.ICONSCALE = GUI.HorizontalSlider(new Rect(20, 175, toolWindowWidth - 20, 20), TeamIconSettings.ICONSCALE, 0.25f, 2f);
+				TeamIconSettings.SCORE = GUI.Toggle(new Rect(15, 50, toolWindowWidth - 20, 20), TeamIconSettings.SCORE, "Enable Score", BDGuiSkin.toggle);
+				TeamIconSettings.HEALTHBAR = GUI.Toggle(new Rect(15, 75, toolWindowWidth - 20, 20), TeamIconSettings.HEALTHBAR, "Vessel Healthbars", BDGuiSkin.toggle);
+
+				TeamIconSettings.MISSILES = GUI.Toggle(new Rect(15, 100, toolWindowWidth - 20, 20), TeamIconSettings.MISSILES, "Missile Icons", BDGuiSkin.toggle);
+				TeamIconSettings.DEBRIS = GUI.Toggle(new Rect(15, 125, toolWindowWidth - 20, 20), TeamIconSettings.DEBRIS, "Debris Icons", BDGuiSkin.toggle);
+				TeamIconSettings.PERSISTANT = GUI.Toggle(new Rect(15, 150, toolWindowWidth - 20, 20), TeamIconSettings.PERSISTANT, "Do not hide with UI", BDGuiSkin.toggle);
+				TeamIconSettings.POINTERS = GUI.Toggle(new Rect(15, 180, toolWindowWidth - 20, 20), TeamIconSettings.POINTERS, "Offscreen Icon Pointers", BDGuiSkin.toggle);
+
+				GUI.Label(new Rect(75, 200, toolWindowWidth - 20, 20), $"Icon scale: {(TeamIconSettings.ICONSCALE * 100f).ToString("0")}" + "%");
+				TeamIconSettings.ICONSCALE = GUI.HorizontalSlider(new Rect(10, 225, toolWindowWidth - 40, 20), TeamIconSettings.ICONSCALE, 0.25f, 2f);
 				GUI.EndGroup();
-				line = 8;
+				line = 10;
 
-				Rect TeamColorsGroup = new Rect(15, 265, toolWindowWidth - 20, teamWindowHeight);
+				Rect TeamColorsGroup = new Rect(15, 315, toolWindowWidth - 20, teamWindowHeight);
 				GUI.BeginGroup(TeamColorsGroup, GUIContent.none, BDGuiSkin.box);
+
+				float Teamcount = 0;
+				float TotalTeams = 0;
+				// First let's count the total teams for color-picking
+				using (var teamManagers = weaponManagers.GetEnumerator())
+					while (teamManagers.MoveNext())
+						TotalTeams++;
+
 				using (var teamManagers = weaponManagers.GetEnumerator())
 					while (teamManagers.MoveNext())
 					{
 						i++;
+						Teamcount++;
 						Rect buttonRect = new Rect(30, -20 + (i * 25), 190, 20);
 						GUIStyle vButtonStyle = showColorSelect ? BDGuiSkin.box : BDGuiSkin.button;
 						if (GUI.Button(buttonRect, $"{teamManagers.Current.Key}", vButtonStyle))
@@ -282,70 +301,9 @@ namespace BDTeamIcons
 							LoadConfig();
 							selectedTeam = i;
 						}
-						if (i == 1)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_1_COLOR);
-						}
-						else if (i == 2)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_2_COLOR);
-						}
-						else if (i == 3)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_3_COLOR);
-						}
-						else if (i == 4)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_4_COLOR);
-						}
-						else if (i == 5)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_5_COLOR);
-						}
-						else if (i == 6)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_6_COLOR);
-						}
-						else if (i == 7)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_7_COLOR);
-						}
-						else if (i == 8)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_8_COLOR);
-						}
-						else if (i == 9)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_9_COLOR);
-						}
-						else if (i == 10)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_10_COLOR);
-						}
-						else if (i == 11)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_11_COLOR);
-						}
-						else if (i == 12)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_12_COLOR);
-						}
-						else if (i == 13)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_13_COLOR);
-						}
-						else if (i == 14)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_14_COLOR);
-						}
-						else if (i == 15)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_15_COLOR);
-						}
-						else if (i == 16)
-						{
-							title.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_16_COLOR);
-						}
+						// Set color
+						float h = (Teamcount - 1) / TotalTeams;
+						title.normal.textColor = Color.HSVToRGB(h, 1f, 1f);
 						GUI.Label(new Rect(5, -20 + (i * 25), 25, 25), "*", title);
 					}
 				teamWindowHeight = Mathf.Lerp(teamWindowHeight, (i * 25)+5, 1);
