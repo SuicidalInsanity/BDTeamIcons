@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using BDArmory.Modules;
 using UnityEngine;
 using BDArmory.UI;
 using BDArmory.Misc;
+using BDArmory.Control;
+using BDArmory.Competition;
+using LibNoise;
 
 namespace BDTeamIcons
 {
@@ -11,6 +14,8 @@ namespace BDTeamIcons
 	{
 		public BDATeamIcons Instance;
 		public SortedList<string, List<MissileFire>> weaponManagers = new SortedList<string, List<MissileFire>>();
+
+		public Material IconMat;
 
 		void Awake()
 		{
@@ -38,6 +43,8 @@ namespace BDTeamIcons
 			mIStyle.fontStyle = FontStyle.Normal;
 			mIStyle.fontSize = 10;
 			mIStyle.normal.textColor = XKCDColors.Yellow;
+
+			IconMat = new Material(Shader.Find("KSP/Particles/Alpha Blended"));
 		}
 
 		private void MissileFireOnToggleTeam(MissileFire wm, BDTeam team)
@@ -92,11 +99,10 @@ namespace BDTeamIcons
 				}
 		}
 
-		private static void DrawOnScreenIcon(Vector3 worldPos, Texture texture, Vector2 size, Color Teamcolor)
+		private void DrawOnScreenIcon(Vector3 worldPos, Texture texture, Vector2 size, Color Teamcolor, bool targeticon, bool ShowPointer)
 		{
 			if (Event.current.type.Equals(EventType.Repaint))
 			{
-				Material IconMat;
 				bool offscreen = false;
 				Vector3 screenPos = BDGUIUtils.GetMainCamera().WorldToViewportPoint(worldPos);
 				if (screenPos.z < 0)
@@ -117,83 +123,106 @@ namespace BDTeamIcons
 				float yPos = ((1 - screenPos.y) * Screen.height) - (0.5f * size.y);
 				float xtPos = 1 * (Screen.width / 2);
 				float ytPos = 1 * (Screen.height / 2);
-				if (offscreen && TeamIconSettings.POINTERS)
+
+				if (!offscreen)
 				{
-					Vector2 pointer;
-					Vector2 tail;
-
-					pointer.x = xPos;
-					pointer.y = yPos;
-					tail.x = xtPos;
-					tail.y = ytPos;
-
-					DrawPointer(pointer, tail, 4, Teamcolor);
+					IconMat.SetColor("_TintColor", Teamcolor);
+					IconMat.mainTexture = texture;
+					if (targeticon)
+					{
+						yPos = yPos - (24 * TeamIconSettings.ICONSCALE);
+					}
+					Rect iconRect = new Rect(xPos, yPos, size.x, size.y);
+					Graphics.DrawTexture(iconRect, texture, IconMat);
 				}
 				else
 				{
-					IconMat = new Material(Shader.Find("KSP/Particles/Alpha Blended"));
-					IconMat.SetColor("_TintColor", Teamcolor);
-					IconMat.mainTexture = texture;
-					Rect iconRect = new Rect(xPos, yPos, size.x, size.y);
-					Rect sourceRect = new Rect(0, 0, 40 * TeamIconSettings.ICONSCALE, 40 * TeamIconSettings.ICONSCALE);
-					Graphics.DrawTexture(iconRect, texture, IconMat); 
+					if (TeamIconSettings.POINTERS)
+					{
+						Vector2 head;
+						Vector2 tail;
+
+						head.x = xPos;
+						head.y = yPos;
+						tail.x = xtPos;
+						tail.y = ytPos;
+						float angle = Vector2.Angle(Vector3.up, tail - head);
+						if (tail.x < head.x)
+						{
+							angle = -angle;
+						}
+						if (ShowPointer)
+						{
+							DrawPointer(calculateRadialCoords(head, tail, angle, 0.75f), angle, 4, Teamcolor);
+						}
+						if (targeticon)
+						{
+							IconMat.SetColor("_TintColor", Teamcolor);
+							IconMat.mainTexture = texture;
+							xPos = (calculateRadialCoords(head, tail, angle, 0.78f)).x - (0.5f * size.x);
+							yPos = (calculateRadialCoords(head, tail, angle, 0.78f)).y - (0.5f * size.y);
+							Rect targetRect = new Rect(xPos, yPos, size.x, size.y);
+							Graphics.DrawTexture(targetRect, texture, IconMat);
+						}
+					}
 				}
+
 			}
 		}
-		public static void DrawPointer(Vector2 Pointer, Vector2 Tail, float width, Color color)
+		public Vector2 calculateRadialCoords(Vector2 RadialCoord, Vector2 Tail, float angle, float edgeDistance)
 		{
-			Camera cam = BDGUIUtils.GetMainCamera();
-
-			if (cam == null) return;
-
-			GUI.matrix = Matrix4x4.identity;
-
-			float angle = Vector2.Angle(Vector3.up, Tail - Pointer);
-			if (Tail.x < Pointer.x)
-			{
-				angle = -angle;
-			}
 			float theta = Mathf.Abs(angle);
 			if (theta > 90)
 			{
 				theta -= 90;
 			}
 			theta = theta * Mathf.Deg2Rad; //needs to be in radians for Mathf. trig
-			float length = 60;
 			float HalfWidth = Screen.width / 2;
 			float HalfHeight = Screen.height / 2;
-			float Cos = Mathf.Cos(theta); 
+			float Cos = Mathf.Cos(theta);
 			float Sin = Mathf.Sin(theta);
-			
-			if (Pointer.y >= HalfHeight)
+
+			if (RadialCoord.y >= HalfHeight)
 			{
-				if (Pointer.x >= HalfWidth) // set up Quads 3-4
+				if (RadialCoord.x >= HalfWidth) // set up Quads 3-4
 				{
-					Pointer.x = (Cos * (0.75f * HalfWidth)) + HalfWidth;
+					RadialCoord.x = (Cos * (edgeDistance * HalfWidth)) + HalfWidth;
 				}
 				else
 				{
-					Pointer.x = HalfWidth - ((Cos * 0.75f) * HalfWidth);
+					RadialCoord.x = HalfWidth - ((Cos * edgeDistance) * HalfWidth);
 				}
-				Pointer.y = (Sin * (0.75f * HalfHeight)) + HalfHeight;
+				RadialCoord.y = (Sin * (edgeDistance * HalfHeight)) + HalfHeight;
 			}
 			else
 			{
-				if (Pointer.x >= HalfWidth) // set up Quads 1-2 
+				if (RadialCoord.x >= HalfWidth) // set up Quads 1-2 
 				{
-					Pointer.x = (Sin * (0.75f * HalfWidth)) + HalfWidth;
+					RadialCoord.x = (Sin * (edgeDistance * HalfWidth)) + HalfWidth;
 				}
 				else
 				{
-					Pointer.x = HalfWidth - ((Sin * 0.75f) * HalfWidth);
+					RadialCoord.x = HalfWidth - ((Sin * edgeDistance) * HalfWidth);
 				}
-				Pointer.y = HalfHeight - ((Cos * 0.75f) * HalfHeight);
+				RadialCoord.y = HalfHeight - ((Cos * edgeDistance) * HalfHeight);
 			}
+			return RadialCoord;
+		}
+		public static void DrawPointer(Vector2 Pointer, float angle, float width, Color color)
+		{
+			Camera cam = BDGUIUtils.GetMainCamera();
+
+			if (cam == null) return;
+
+			GUI.matrix = Matrix4x4.identity;
+			float length = 60;
+
 			Rect upRect = new Rect(Pointer.x - (width / 2), Pointer.y - length, width, length);
 			GUIUtility.RotateAroundPivot(-angle + 180, Pointer);
 			BDGUIUtils.DrawRectangle(upRect, color);
 			GUI.matrix = Matrix4x4.identity;
 		}
+
 		void OnGUI()
 		{
 			if ((HighLogic.LoadedSceneIsFlight && BDArmorySetup.GAME_UI_ENABLED && !MapView.MapIsEnabled && TeamIconSettings.TEAMICONS) || HighLogic.LoadedSceneIsFlight && !BDArmorySetup.GAME_UI_ENABLED && !MapView.MapIsEnabled && TeamIconSettings.TEAMICONS && TeamIconSettings.PERSISTANT)
@@ -259,7 +288,14 @@ namespace BDTeamIcons
 							}
 						}
 					}
-				int Teamcount = 0;
+				float Teamcount = 0;
+				float TotalTeams = 0;
+
+				// First let's count the total teams for color-picking
+				using (var teamManagers = weaponManagers.GetEnumerator())
+					while (teamManagers.MoveNext())
+						TotalTeams++;
+
 				using (var teamManagers = weaponManagers.GetEnumerator())
 					while (teamManagers.MoveNext())
 					{
@@ -269,166 +305,170 @@ namespace BDTeamIcons
 							{
 								if (wm.Current == null) continue;
 
-								if (wm.Current.vessel.isActiveVessel) continue;
+								float h = (Teamcount - 1) / TotalTeams;
+								Teamcolor = Color.HSVToRGB(h, 1f, 1f);
+								IconUIStyle.normal.textColor = Teamcolor;
 
-								Vector3 selfPos = FlightGlobals.ActiveVessel.CoM;
-								Vector3 targetPos = (wm.Current.vessel.CoM);
-								Vector3 targetRelPos = (targetPos - selfPos);
-								Vector2 guiPos;
-								float distance;
-								string UIdist;
-								string UoM;
-								string vName;
-								distance = targetRelPos.magnitude;
-								if (distance >= 100)
+								if (wm.Current.vessel.isActiveVessel)
 								{
-									if ((distance / 1000) >= 1)
+									if (wm.Current.currentTarget == null) continue;
+									Vector3 sPos = FlightGlobals.ActiveVessel.CoM;
+									Vector3 tPos = (wm.Current.currentTarget.Vessel.CoM);
+									Vector3 RelPos = (tPos - sPos);
+									if (RelPos.magnitude >= 100)
 									{
-										UoM = "km";
-										UIdist = (distance / 1000).ToString("0.00");
+										DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((24 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
 									}
-									else
+								}
+								else
+								{
+									Vector3 selfPos = FlightGlobals.ActiveVessel.CoM;
+									Vector3 targetPos = (wm.Current.vessel.CoM);
+									Vector3 targetRelPos = (targetPos - selfPos);
+									Vector2 guiPos;
+									float distance;
+
+									distance = targetRelPos.magnitude;
+									string UIdist;
+									string UoM;
+									string vName;
+									if (distance >= 100)
 									{
-										UoM = "m";
-										UIdist = distance.ToString("0.0");
-									}
-									if ((wm.Current.vessel.vesselType == VesselType.Ship && !wm.Current.vessel.Splashed) || wm.Current.vessel.vesselType == VesselType.Plane)
-									{
-										icon = BDATISetup.Instance.TextureIconPlane;
-									}
-									else if (wm.Current.vessel.vesselType == VesselType.Base || wm.Current.vessel.vesselType == VesselType.Lander)
-									{
-										icon = BDATISetup.Instance.TextureIconBase;
-									}
-									else if (wm.Current.vessel.vesselType == VesselType.Rover)
-									{
-										icon = BDATISetup.Instance.TextureIconRover;
-									}
-									else if (wm.Current.vessel.vesselType == VesselType.Probe)
-									{
-										icon = BDATISetup.Instance.TextureIconProbe;
-									}
-									else if (wm.Current.vessel.vesselType == VesselType.Ship && wm.Current.vessel.Splashed)
-									{
-										icon = BDATISetup.Instance.TextureIconShip;
-										if (wm.Current.vessel.vesselType == VesselType.Ship && wm.Current.vessel.altitude < -10)
+										if ((distance / 1000) >= 1)
 										{
-											icon = BDATISetup.Instance.TextureIconSub;
+											UoM = "km";
+											UIdist = (distance / 1000).ToString("0.00");
 										}
-									}
-									else if (wm.Current.vessel.vesselType == VesselType.Debris)
-									{
-										icon = BDATISetup.Instance.TextureIconDebris;
-										size = 20;
-									}
-									else
-									{
-										icon = BDATISetup.Instance.TextureIconGeneric;
-									}
-									if (Teamcount == 1)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_1_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_1_COLOR);
-									}
-									else if (Teamcount == 2)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_2_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_2_COLOR);
-									}
-									else if (Teamcount == 3)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_3_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_3_COLOR);
-									}
-									else if (Teamcount == 4)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_4_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_4_COLOR);
-									}
-									else if (Teamcount == 5)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_5_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_5_COLOR);
-									}
-									else if (Teamcount == 6)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_6_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_6_COLOR);
-									}
-									else if (Teamcount == 7)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_7_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_7_COLOR);
-									}
-									else if (Teamcount == 8)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_8_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_8_COLOR);
-									}
-									else if (Teamcount == 9)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_1_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_9_COLOR);
-									}
-									else if (Teamcount == 10)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_2_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_10_COLOR);
-									}
-									else if (Teamcount == 11)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_3_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_11_COLOR);
-									}
-									else if (Teamcount == 12)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_4_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_12_COLOR);
-									}
-									else if (Teamcount == 13)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_5_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_13_COLOR);
-									}
-									else if (Teamcount == 14)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_6_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_14_COLOR);
-									}
-									else if (Teamcount == 15)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_7_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_15_COLOR);
-									}
-									else if (Teamcount == 16)
-									{
-										IconUIStyle.normal.textColor = Misc.ParseColor255(TeamIconSettings.TEAM_8_COLOR);
-										Teamcolor = Misc.ParseColor255(TeamIconSettings.TEAM_16_COLOR);
-									}
-									else
-									{
-										IconUIStyle.normal.textColor = XKCDColors.Grey;
-										Teamcolor = XKCDColors.Grey;
-									}
-									DrawOnScreenIcon(wm.Current.vessel.CoM, icon, new Vector2((size * TeamIconSettings.ICONSCALE), (size * TeamIconSettings.ICONSCALE)), Teamcolor);
-									if (BDGUIUtils.WorldToGUIPos(wm.Current.vessel.CoM, out guiPos))
-									{
-										if (TeamIconSettings.VESSELNAMES)
+										else
 										{
-											vName = wm.Current.vessel.vesselName;
-											Rect nameRect = new Rect((guiPos.x + (24 * TeamIconSettings.ICONSCALE)), guiPos.y - 4, 100, 32);
-											GUI.Label(nameRect, vName, IconUIStyle);
+											UoM = "m";
+											UIdist = distance.ToString("0.0");
 										}
-										Rect distRect = new Rect((guiPos.x - 12), (guiPos.y + (20 * TeamIconSettings.ICONSCALE)), 100, 32);
-										GUI.Label(distRect, UIdist + UoM, IconUIStyle);
-										if (TeamIconSettings.TEAMNAMES)
+										if ((wm.Current.vessel.vesselType == VesselType.Ship && !wm.Current.vessel.Splashed) || wm.Current.vessel.vesselType == VesselType.Plane)
 										{
-											Rect teamRect = new Rect((guiPos.x + (11 * TeamIconSettings.ICONSCALE)), (guiPos.y - (19 * TeamIconSettings.ICONSCALE)), 16, 16);
-											GUI.Label(teamRect, "Team: " + $"{wm.Current.Team.Name}", IconUIStyle);
+											icon = BDATISetup.Instance.TextureIconPlane;
+										}
+										else if (wm.Current.vessel.vesselType == VesselType.Base || wm.Current.vessel.vesselType == VesselType.Lander)
+										{
+											icon = BDATISetup.Instance.TextureIconBase;
+										}
+										else if (wm.Current.vessel.vesselType == VesselType.Rover)
+										{
+											icon = BDATISetup.Instance.TextureIconRover;
+										}
+										else if (wm.Current.vessel.vesselType == VesselType.Probe)
+										{
+											icon = BDATISetup.Instance.TextureIconProbe;
+										}
+										else if (wm.Current.vessel.vesselType == VesselType.Ship && wm.Current.vessel.Splashed)
+										{
+											icon = BDATISetup.Instance.TextureIconShip;
+											if (wm.Current.vessel.vesselType == VesselType.Ship && wm.Current.vessel.altitude < -10)
+											{
+												icon = BDATISetup.Instance.TextureIconSub;
+											}
+										}
+										else if (wm.Current.vessel.vesselType == VesselType.Debris)
+										{
+											icon = BDATISetup.Instance.TextureIconDebris;
+											size = 20;
+										}
+										else
+										{
+											icon = BDATISetup.Instance.TextureIconGeneric;
+										}
+										// Set color
+
+										DrawOnScreenIcon(wm.Current.vessel.CoM, icon, new Vector2((size * TeamIconSettings.ICONSCALE), (size * TeamIconSettings.ICONSCALE)), Teamcolor, false, true);
+										if (wm.Current.currentTarget != null)
+										{
+											if (!wm.Current.currentTarget.Vessel.isActiveVessel)
+											{
+												DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((24 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
+											}
+											//else
+											//{
+											//	DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((20 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
+											//}
+										}
+										if (BDGUIUtils.WorldToGUIPos(wm.Current.vessel.CoM, out guiPos))
+										{
+											if (TeamIconSettings.VESSELNAMES)
+											{
+												vName = wm.Current.vessel.vesselName;
+												Rect nameRect = new Rect((guiPos.x + (24 * TeamIconSettings.ICONSCALE)), guiPos.y - 4, 100, 32);
+												GUI.Label(nameRect, vName, IconUIStyle);
+											}
+											if (TeamIconSettings.TEAMNAMES)
+											{
+												Rect teamRect = new Rect((guiPos.x + (16 * TeamIconSettings.ICONSCALE)), (guiPos.y - (19 * TeamIconSettings.ICONSCALE)), 100, 32);
+												GUI.Label(teamRect, "Team: " + $"{wm.Current.Team.Name}", IconUIStyle);
+											}
+
+											if (TeamIconSettings.SCORE)
+											{
+												BDArmory.Control.ScoringData scoreData = null;
+												int Score = 0;
+
+												if (BDACompetitionMode.Instance.Scores.ContainsKey(wm.Current.vessel.vesselName))
+												{
+													scoreData = BDACompetitionMode.Instance.Scores[wm.Current.vessel.vesselName];
+													Score = scoreData.Score;
+												}
+												if (VesselSpawner.Instance.vesselsSpawningContinuously)
+												{
+													if (VesselSpawner.Instance.continuousSpawningScores.ContainsKey(wm.Current.vessel.vesselName))
+													{
+														Score += VesselSpawner.Instance.continuousSpawningScores[wm.Current.vessel.vesselName].cumulativeHits;
+													}
+												}
+
+												Rect scoreRect = new Rect((guiPos.x + (16 * TeamIconSettings.ICONSCALE)), (guiPos.y + (14 * TeamIconSettings.ICONSCALE)), 100, 32);
+												GUI.Label(scoreRect, "Score: " + Score, IconUIStyle);
+											}
+
+											if (TeamIconSettings.HEALTHBAR)
+											{
+
+												double hpPercent = 1;
+												float damagetaken = 0;
+												/* //parts can take more damage than they have HP from overkill, this artificially inflates the damage taken count and throws off the remaining HP %
+												if (BDACompetitionMode.Instance.Scores.ContainsKey(wm.Current.vessel.vesselName)) 
+												{
+													if (BDACompetitionMode.Instance.Scores[wm.Current.vessel.vesselName].damageFromBullets.Count > 0)
+													{
+														foreach (var vesselName in BDACompetitionMode.Instance.Scores[wm.Current.vessel.vesselName].damageFromBullets.Keys)
+															damagetaken += BDACompetitionMode.Instance.Scores[wm.Current.vessel.vesselName].damageFromBullets[vesselName];
+													}
+													if (BDACompetitionMode.Instance.Scores[wm.Current.vessel.vesselName].damageFromMissiles.Count > 0)
+													{
+														foreach (var vesselName in BDACompetitionMode.Instance.Scores[wm.Current.vessel.vesselName].damageFromMissiles.Keys)
+															damagetaken += BDACompetitionMode.Instance.Scores[wm.Current.vessel.vesselName].damageFromMissiles[vesselName];
+													}
+												}
+												hpPercent = (wm.Current.totalHP - damagetaken ) / wm.Current.totalHP;										
+												*/ //so lets just count how much of the ship is left instead
+												hpPercent = Mathf.Clamp((1- ((wm.Current.totalHP - wm.Current.vessel.parts.Count) / wm.Current.totalHP)), 0, 1);
+												if (hpPercent > 0)
+												{
+													Rect barRect = new Rect((guiPos.x - (32 * TeamIconSettings.ICONSCALE)), (guiPos.y + (30 * TeamIconSettings.ICONSCALE)), (64 * TeamIconSettings.ICONSCALE), 12);
+													Rect healthRect = new Rect((guiPos.x - (30 * TeamIconSettings.ICONSCALE)), (guiPos.y + (32 * TeamIconSettings.ICONSCALE)), (60 * (float)hpPercent * TeamIconSettings.ICONSCALE), 8);
+													//GUI.Label(healthRect, "Team: " + $"{wm.Current.Team.Name}", IconUIStyle);
+													BDGUIUtils.DrawRectangle(barRect, XKCDColors.Grey);
+													BDGUIUtils.DrawRectangle(healthRect, Color.HSVToRGB((85f * (float)hpPercent) / 255, 1f, 1f));
+
+												}
+												Rect distRect = new Rect((guiPos.x - 12), (guiPos.y + (45 * TeamIconSettings.ICONSCALE)), 100, 32);
+												GUI.Label(distRect, UIdist + UoM, IconUIStyle);
+											}
+											else
+											{
+												Rect distRect = new Rect((guiPos.x - 12), (guiPos.y + (20 * TeamIconSettings.ICONSCALE)), 100, 32);
+												GUI.Label(distRect, UIdist + UoM, IconUIStyle);
+											}
 										}
 									}
 								}
-
 							}
 
 					}
