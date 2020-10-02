@@ -311,13 +311,16 @@ namespace BDTeamIcons
 
 								if (wm.Current.vessel.isActiveVessel)
 								{
-									if (wm.Current.currentTarget == null) continue;
-									Vector3 sPos = FlightGlobals.ActiveVessel.CoM;
-									Vector3 tPos = (wm.Current.currentTarget.Vessel.CoM);
-									Vector3 RelPos = (tPos - sPos);
-									if (RelPos.magnitude >= 100)
+									if (TeamIconSettings.THREATICON)
 									{
-										DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((24 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
+										if (wm.Current.currentTarget == null) continue;
+										Vector3 sPos = FlightGlobals.ActiveVessel.CoM;
+										Vector3 tPos = (wm.Current.currentTarget.Vessel.CoM);
+										Vector3 RelPos = (tPos - sPos);
+										if (RelPos.magnitude >= 100)
+										{
+											DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((24 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
+										}
 									}
 								}
 								else
@@ -380,16 +383,19 @@ namespace BDTeamIcons
 										// Set color
 
 										DrawOnScreenIcon(wm.Current.vessel.CoM, icon, new Vector2((size * TeamIconSettings.ICONSCALE), (size * TeamIconSettings.ICONSCALE)), Teamcolor, false, true);
-										if (wm.Current.currentTarget != null)
+										if (TeamIconSettings.THREATICON)
 										{
-											if (!wm.Current.currentTarget.Vessel.isActiveVessel)
+											if (wm.Current.currentTarget != null)
 											{
-												DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((24 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
+												if (!wm.Current.currentTarget.Vessel.isActiveVessel)
+												{
+													DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((24 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
+												}
+												//else
+												//{
+												//	DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((20 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
+												//}
 											}
-											//else
-											//{
-											//	DrawOnScreenIcon(wm.Current.currentTarget.Vessel.CoM, BDATISetup.Instance.TextureIconThreat, new Vector2((20 * TeamIconSettings.ICONSCALE), (24 * TeamIconSettings.ICONSCALE)), Teamcolor, true, false);
-											//}
 										}
 										if (BDGUIUtils.WorldToGUIPos(wm.Current.vessel.CoM, out guiPos))
 										{
@@ -431,7 +437,6 @@ namespace BDTeamIcons
 											{
 
 												double hpPercent = 1;
-												float damagetaken = 0;
 												/* //parts can take more damage than they have HP from overkill, this artificially inflates the damage taken count and throws off the remaining HP %
 												if (BDACompetitionMode.Instance.Scores.ContainsKey(wm.Current.vessel.vesselName)) 
 												{
@@ -448,7 +453,7 @@ namespace BDTeamIcons
 												}
 												hpPercent = (wm.Current.totalHP - damagetaken ) / wm.Current.totalHP;										
 												*/ //so lets just count how much of the ship is left instead
-												hpPercent = Mathf.Clamp((1- ((wm.Current.totalHP - wm.Current.vessel.parts.Count) / wm.Current.totalHP)), 0, 1);
+												hpPercent = Mathf.Clamp((1 - ((wm.Current.totalHP - wm.Current.vessel.parts.Count) / wm.Current.totalHP)), 0, 1);
 												if (hpPercent > 0)
 												{
 													Rect barRect = new Rect((guiPos.x - (32 * TeamIconSettings.ICONSCALE)), (guiPos.y + (30 * TeamIconSettings.ICONSCALE)), (64 * TeamIconSettings.ICONSCALE), 12);
