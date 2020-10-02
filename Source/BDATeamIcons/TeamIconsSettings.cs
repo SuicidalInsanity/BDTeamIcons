@@ -9,6 +9,7 @@ namespace BDTeamIcons
 		[SettingsDataField] public static bool VESSELNAMES = true;
 		[SettingsDataField] public static bool SCORE = false;
 		[SettingsDataField] public static bool HEALTHBAR = false;
+		[SettingsDataField] public static bool THREATICON = false;
 		[SettingsDataField] public static bool MISSILES = false;
 		[SettingsDataField] public static bool DEBRIS = true;
 		[SettingsDataField] public static bool PERSISTANT = true;
