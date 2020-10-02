@@ -137,7 +137,7 @@ namespace BDTeamIcons
 				}
 				else
 				{
-					if (TeamIconSettings.POINTERS)
+					if (TeamIconSettings.POINTERS || TeamIconSettings.THREATICON)
 					{
 						Vector2 head;
 						Vector2 tail;
@@ -151,11 +151,11 @@ namespace BDTeamIcons
 						{
 							angle = -angle;
 						}
-						if (ShowPointer)
+						if (ShowPointer && TeamIconSettings.POINTERS)
 						{
 							DrawPointer(calculateRadialCoords(head, tail, angle, 0.75f), angle, 4, Teamcolor);
 						}
-						if (targeticon)
+						if (targeticon && TeamIconSettings.THREATICON)
 						{
 							IconMat.SetColor("_TintColor", Teamcolor);
 							IconMat.mainTexture = texture;
