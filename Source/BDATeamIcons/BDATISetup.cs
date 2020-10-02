@@ -256,7 +256,7 @@ namespace BDTeamIcons
 		{
 			int line = 0;
 			int i = 0;
-			TeamIconSettings.TEAMICONS = GUI.Toggle(new Rect(5, 25, 250, 20), TeamIconSettings.TEAMICONS, "Enable Team Icons", BDGuiSkin.toggle);
+			TeamIconSettings.TEAMICONS = GUI.Toggle(new Rect(5, 25, 275, 20), TeamIconSettings.TEAMICONS, "Enable Team Icons", BDGuiSkin.toggle);
 			if (TeamIconSettings.TEAMICONS)
 			{
 				Rect IconOptionsGroup = new Rect(15, 55, toolWindowWidth - 20, 250);
@@ -270,12 +270,13 @@ namespace BDTeamIcons
 				TeamIconSettings.MISSILES = GUI.Toggle(new Rect(15, 100, toolWindowWidth - 20, 20), TeamIconSettings.MISSILES, "Missile Icons", BDGuiSkin.toggle);
 				TeamIconSettings.DEBRIS = GUI.Toggle(new Rect(15, 125, toolWindowWidth - 20, 20), TeamIconSettings.DEBRIS, "Debris Icons", BDGuiSkin.toggle);
 				TeamIconSettings.PERSISTANT = GUI.Toggle(new Rect(15, 150, toolWindowWidth - 20, 20), TeamIconSettings.PERSISTANT, "Do not hide with UI", BDGuiSkin.toggle);
-				TeamIconSettings.POINTERS = GUI.Toggle(new Rect(15, 180, toolWindowWidth - 20, 20), TeamIconSettings.POINTERS, "Offscreen Icon Pointers", BDGuiSkin.toggle);
+				TeamIconSettings.POINTERS = GUI.Toggle(new Rect(15, 175, toolWindowWidth - 20, 20), TeamIconSettings.POINTERS, "Offscreen Icon Pointers", BDGuiSkin.toggle);
+				TeamIconSettings.THREATICON = GUI.Toggle(new Rect(15, 200, toolWindowWidth - 20, 20), TeamIconSettings.THREATICON, "Vessel Threat Icons", BDGuiSkin.toggle);
 
-				GUI.Label(new Rect(75, 200, toolWindowWidth - 20, 20), $"Icon scale: {(TeamIconSettings.ICONSCALE * 100f).ToString("0")}" + "%");
-				TeamIconSettings.ICONSCALE = GUI.HorizontalSlider(new Rect(10, 225, toolWindowWidth - 40, 20), TeamIconSettings.ICONSCALE, 0.25f, 2f);
+				GUI.Label(new Rect(75, 225, toolWindowWidth - 20, 20), $"Icon scale: {(TeamIconSettings.ICONSCALE * 100f).ToString("0")}" + "%");
+				TeamIconSettings.ICONSCALE = GUI.HorizontalSlider(new Rect(10, 250, toolWindowWidth - 40, 20), TeamIconSettings.ICONSCALE, 0.25f, 2f);
 				GUI.EndGroup();
-				line = 10;
+				line = 11;
 
 				Rect TeamColorsGroup = new Rect(15, 315, toolWindowWidth - 20, teamWindowHeight);
 				GUI.BeginGroup(TeamColorsGroup, GUIContent.none, BDGuiSkin.box);
