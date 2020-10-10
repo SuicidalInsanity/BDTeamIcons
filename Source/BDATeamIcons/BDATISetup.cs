@@ -261,7 +261,7 @@ namespace BDTeamIcons
 			{
 				Rect IconOptionsGroup = new Rect(15, 55, toolWindowWidth - 20, 280);
 				GUI.BeginGroup(IconOptionsGroup, GUIContent.none, BDGuiSkin.box);
-				TeamIconSettings.TEAMNAMES = GUI.Toggle(new Rect(15, 0, toolWindowWidth - 20, 20), TeamIconSettings.TEAMNAMES, "Enable Team Labels", BDGuiSkin.toggle);
+				TeamIconSettings.TEAMNAMES = GUI.Toggle(new Rect(15, 0, toolWindowWidth - 20, 20), TeamIconSettings.TEAMNAMES, "Enable Team Labels", BDGuiSkin.toggle); //Future me, localize these at some point
 				TeamIconSettings.VESSELNAMES = GUI.Toggle(new Rect(15, 25, toolWindowWidth - 20, 20), TeamIconSettings.VESSELNAMES, "Enable Vessel Labels", BDGuiSkin.toggle);
 
 				TeamIconSettings.SCORE = GUI.Toggle(new Rect(15, 50, toolWindowWidth - 20, 20), TeamIconSettings.SCORE, "Enable Score", BDGuiSkin.toggle);
@@ -270,8 +270,8 @@ namespace BDTeamIcons
 				TeamIconSettings.MISSILES = GUI.Toggle(new Rect(15, 100, toolWindowWidth - 20, 20), TeamIconSettings.MISSILES, "Missile Icons", BDGuiSkin.toggle);
 				TeamIconSettings.DEBRIS = GUI.Toggle(new Rect(15, 125, toolWindowWidth - 20, 20), TeamIconSettings.DEBRIS, "Debris Icons", BDGuiSkin.toggle);
 				TeamIconSettings.PERSISTANT = GUI.Toggle(new Rect(15, 150, toolWindowWidth - 20, 20), TeamIconSettings.PERSISTANT, "Do not hide with UI", BDGuiSkin.toggle);
-				TeamIconSettings.THREATICON = GUI.Toggle(new Rect(15, 175, toolWindowWidth - 20, 20), TeamIconSettings.THREATICON, "Offscreen Icon Pointers", BDGuiSkin.toggle);
-				TeamIconSettings.POINTERS = GUI.Toggle(new Rect(15, 200, toolWindowWidth - 20, 20), TeamIconSettings.POINTERS, "Vessel Threat Icons", BDGuiSkin.toggle);
+				TeamIconSettings.THREATICON = GUI.Toggle(new Rect(15, 175, toolWindowWidth - 20, 20), TeamIconSettings.THREATICON, "Vessel Threat Icons", BDGuiSkin.toggle);
+				TeamIconSettings.POINTERS = GUI.Toggle(new Rect(15, 200, toolWindowWidth - 20, 20), TeamIconSettings.POINTERS, "Offscreen Icon Pointers", BDGuiSkin.toggle);
 
 				GUI.Label(new Rect(75, 225, toolWindowWidth - 20, 20), $"Icon scale: {(TeamIconSettings.ICONSCALE * 100f).ToString("0")}" + "%");
 				TeamIconSettings.ICONSCALE = GUI.HorizontalSlider(new Rect(10, 250, toolWindowWidth - 40, 20), TeamIconSettings.ICONSCALE, 0.25f, 2f);
