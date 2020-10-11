@@ -1,5 +1,5 @@
 # BDTeamIcons
-BDTeamIcons adds team IU icons to vessels in BDA teams. Currently, only the default A and B teams are fully supported.
+BDTeamIcons adds team IU icons to vessels in BDA teams. 
 Use:
 	Press F4 to toggle off the default vessel UI overlay.
 	
