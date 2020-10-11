@@ -5,15 +5,25 @@ Use:
 	
 	'Enable Team Icons' toggles icons on or off.
 	
-	'Enable Team Labels' toggles team identification on/off.
+	'Enable Team Labels' toggles team identification on/off
 	
-	'Enable Vessel Labels' toggles vessel names.
+	'Enable Score' toggles score display
 	
-	'Missile Icons' toggles missile alert icons.
+	'Vessel healthbars' toggles HP bars
 	
-	'Debris Icons' toggles debris icons on/off.
+	'Enable Vessel Labels' toggles vessel names
 	
-	'Do not hide with UI' toggles if icons are turned off via F2.
+	'Missile Icons' toggles missile alert icons
+	
+	'Debris Icons' toggles debris icons on/off
+	
+	'Do not hide with UI' toggles if icons are turned off via F2 
+	
+	'Vessel Threat Icons' toggles icons indicating who is attacking who
+	
+	'Show Pointers' toggles off-screen icon pointers
+	
+	'Icon scale' allows scaling Icon size.
 	
 
 Currently, BDTeamIcons will differentiate between 7 different types of craft and mark each with unique icons - 
